@@ -57,7 +57,6 @@ class Category:
 
     def add_product(self, product):
         self.__products.append(product)
-        Category.category_count += 1
         Category.product_count += len(self.__products)
 
     @property
