@@ -56,6 +56,14 @@ def test_new_product_duplicate_merges():
     assert result.quantity == 8
     assert result.price == 1500.0
 
+def test_product_str(sample_product):
+    assert str(sample_product) == "Test Product, 100.0 руб. Остаток: 10 шт."
+
+def test_product_add():
+    a = Product("A", "", 100.0, 10)
+    b = Product("B", "", 200.0, 2)
+    assert a + b == 1400
+
 
 def test_price_getter(sample_product):
     assert sample_product.price == 100.0
@@ -109,3 +117,13 @@ def test_product_count_increment(sample_category, sample_product):
     p3 = Product("p3", "", 1, 1)
     Category("Many", "", [p1, p2, p3])
     assert Category.product_count == 4
+
+def test_category_str(sample_category):
+    # у sample_product quantity=10
+    assert str(sample_category) == "Test Category, количество продуктов: 10 шт."
+
+def test_category_str_total_quantity():
+    p1 = Product("A", "", 100.0, 5)
+    p2 = Product("B", "", 200.0, 8)
+    cat = Category("Phones", "", [p1, p2])
+    assert str(cat) == "Phones, количество продуктов: 13 шт."

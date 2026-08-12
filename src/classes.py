@@ -6,6 +6,13 @@ class Product:
         self.__price = price
         self.quantity = quantity
 
+    def __str__(self):
+        return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
+
+    def __add__(self, other):
+        return self.price * self.quantity + other.price * other.quantity
+
+
     @classmethod
     def new_product(cls, product: dict, products_list: list):
         if products_list is None:
@@ -55,6 +62,13 @@ class Category:
         Category.category_count += 1
         Category.product_count += len(self.__products)
 
+    def __str__(self):
+        total_quantity = 0
+        for product in self.__products:
+            total_quantity += product.quantity
+        return f'{self.name}, количество продуктов: {total_quantity} шт.'
+
+
     def add_product(self, product):
         self.__products.append(product)
         Category.product_count += 1
@@ -63,5 +77,8 @@ class Category:
     def products(self):
         result = ""
         for product in self.__products:
-            result += f"{product.name}, {product.price} руб. Остаток: {product.quantity} шт.\n"
+            result += f"{str(product)}\n"
         return result
+
+    def get_product_list(self):
+        return self.__products

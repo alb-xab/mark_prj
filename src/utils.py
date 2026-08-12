@@ -21,3 +21,19 @@ def create_objects(data):
         categories.append(Category(**cat))
 
     return categories
+
+class CategoryIterator:
+    def __init__(self, category):  # латинское category
+        self.__products = category.get_product_list()  # тот же параметр
+        self.__index = 0
+
+    def __iter__(self):
+        self.__index = 0
+        return self
+
+    def __next__(self):
+        if self.__index >= len(self.__products):
+            raise StopIteration
+        product = self.__products[self.__index]
+        self.__index += 1
+        return product
