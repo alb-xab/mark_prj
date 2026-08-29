@@ -1,4 +1,6 @@
-from src.classes import Category, Product
+import pytest
+
+from src.classes import Category, LawnGrass, Product, Smartphone
 
 
 def test_product_init(sample_product):
@@ -56,8 +58,10 @@ def test_new_product_duplicate_merges():
     assert result.quantity == 8
     assert result.price == 1500.0
 
+
 def test_product_str(sample_product):
     assert str(sample_product) == "Test Product, 100.0 руб. Остаток: 10 шт."
+
 
 def test_product_add():
     a = Product("A", "", 100.0, 10)
@@ -97,6 +101,68 @@ def test_price_decrease_confirm_no(sample_product, monkeypatch):
     assert sample_product.price == 100.0
 
 
+def test_smartphone_init():
+    phone = Smartphone("Iphone 15", "512GB", 210000.0, 8, 98.2, "15", 512, "Gray space")
+    assert phone.name == "Iphone 15"
+    assert phone.price == 210000.0
+    assert phone.quantity == 8
+    assert phone.efficiency == 98.2
+    assert phone.model == "15"
+    assert phone.memory == 512
+    assert phone.color == "Gray space"
+    assert isinstance(phone, Product)
+
+
+def test_lawn_grass_init():
+    grass = LawnGrass(
+        "Газонная трава", "Элитная", 500.0, 20, "Россия", "7 дней", "Зеленый"
+    )
+    assert grass.name == "Газонная трава"
+    assert grass.country == "Россия"
+    assert grass.germination_period == "7 дней"
+    assert grass.color == "Зеленый"
+    assert isinstance(grass, Product)
+
+
+def test_add_same_smartphones():
+    s1 = Smartphone("A", "", 100.0, 10, 90.0, "A", 128, "black")
+    s2 = Smartphone("B", "", 200.0, 2, 91.0, "B", 256, "white")
+    assert s1 + s2 == 1400
+
+
+def test_add_same_lawn_grass():
+    g1 = LawnGrass("A", "", 500.0, 20, "RU", "7 дней", "green")
+    g2 = LawnGrass("B", "", 450.0, 15, "US", "5 дней", "dark")
+    assert g1 + g2 == 500.0 * 20 + 450.0 * 15
+
+
+def test_add_different_classes_raises():
+    phone = Smartphone("A", "", 100.0, 1, 90.0, "A", 128, "black")
+    grass = LawnGrass("B", "", 500.0, 1, "RU", "7 дней", "green")
+    with pytest.raises(TypeError):
+        phone + grass
+
+
+def test_add_smartphone_to_category(sample_category):
+    phone = Smartphone("A", "", 100.0, 1, 90.0, "A", 128, "black")
+    sample_category.add_product(phone)
+    assert "A, 100.0 руб. Остаток: 1 шт." in sample_category.products
+
+
+def test_add_lawn_grass_to_category(sample_category):
+    grass = LawnGrass("Grass", "", 500.0, 2, "RU", "7 дней", "green")
+    sample_category.add_product(grass)
+    assert "Grass, 500.0 руб. Остаток: 2 шт." in sample_category.products
+
+
+def test_add_non_product_raises(sample_category):
+    with pytest.raises(TypeError):
+        sample_category.add_product("Not a product")
+
+
+#         Тесты категорий
+
+
 def test_category_init(sample_category, sample_product):
     assert sample_category.name == "Test Category"
     assert sample_category.description == "Category description"
@@ -118,9 +184,11 @@ def test_product_count_increment(sample_category, sample_product):
     Category("Many", "", [p1, p2, p3])
     assert Category.product_count == 4
 
+
 def test_category_str(sample_category):
     # у sample_product quantity=10
     assert str(sample_category) == "Test Category, количество продуктов: 10 шт."
+
 
 def test_category_str_total_quantity():
     p1 = Product("A", "", 100.0, 5)

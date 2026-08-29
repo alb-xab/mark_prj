@@ -22,6 +22,7 @@ def create_objects(data):
 
     return categories
 
+
 class CategoryIterator:
     def __init__(self, category):  # латинское category
         self.__products = category.get_product_list()  # тот же параметр
