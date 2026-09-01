@@ -1,10 +1,14 @@
-class Product:
+from src.base_classes import BaseDate, BaseProduct, MixinLog
+
+
+class Product(BaseProduct, MixinLog):
 
     def __init__(self, name, description, price, quantity):
         self.name = name
         self.description = description
         self.__price = price
         self.quantity = quantity
+        super().__init__()
 
     def __str__(self):
         return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
@@ -74,7 +78,7 @@ class LawnGrass(Product):
         self.color = color
 
 
-class Category:
+class Category(BaseDate):
     category_count = 0
     product_count = 0
 
@@ -107,3 +111,17 @@ class Category:
 
     def get_product_list(self):
         return self.__products
+
+
+class Order(BaseDate):
+
+    def __init__(self, product, quantity):
+        self.product = product  # ссылка на Product (или наследника)
+        self.quantity = quantity  # сколько купили
+        self.total_price = product.price * quantity  # итог
+
+    def __str__(self):
+        return (
+            f"{self.product.name}, количество: {self.quantity} шт., "
+            f"Итого: {self.total_price} руб."
+        )
