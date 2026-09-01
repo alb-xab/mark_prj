@@ -1,6 +1,6 @@
 import pytest
 
-from src.classes import Category, LawnGrass, Product, Smartphone
+from src.classes import Category, LawnGrass, Product, Smartphone, Order
 
 
 def test_product_init(sample_product):
@@ -195,3 +195,23 @@ def test_category_str_total_quantity():
     p2 = Product("B", "", 200.0, 8)
     cat = Category("Phones", "", [p1, p2])
     assert str(cat) == "Phones, количество продуктов: 13 шт."
+
+# Тесты для Order
+
+def test_order_init(sample_product):
+    order = Order(sample_product, 3)
+    assert order.product is sample_product
+    assert order.quantity == 3
+    assert order.total_price == 300.0
+
+def test_order_str(sample_product):
+    order = Order(sample_product, 2)
+    text = str(order)
+    assert "Test Product" in text
+    assert "2" in text
+    assert "200.0" in text
+
+def test_order_with_smartphone():
+    phone = Smartphone("A", "desc", 100.0, 5, 90.0, "A", 128, "black")
+    order = Order(phone, 2)
+    assert order.total_price == 200.0
