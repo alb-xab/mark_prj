@@ -256,6 +256,7 @@ def test_order_with_smartphone():
 
 
 def test_order_init_zero_quantity():
+    "Тест нулевого количество Заказа"
     product = Product("Часы", "Наручные", 5000, 2)
     with pytest.raises(
         ZeroQuantityError,
