@@ -1,6 +1,7 @@
 import pytest
 
-from src.classes import Category, LawnGrass, Product, Smartphone, Order
+from src.classes import Category, LawnGrass, Order, Product, Smartphone
+from src.ExceptionsClass import ZeroQuantityError
 
 
 def test_product_init(sample_product):
@@ -160,6 +161,13 @@ def test_add_non_product_raises(sample_category):
         sample_category.add_product("Not a product")
 
 
+def test_product_init_zero_quantity():
+    with pytest.raises(
+        ValueError, match="Товар с нулевым количеством не может быть добавлен"
+    ):
+        Product("Телефон", "Описание", 50000, 0)
+
+
 #         Тесты категорий
 
 
@@ -196,13 +204,42 @@ def test_category_str_total_quantity():
     cat = Category("Phones", "", [p1, p2])
     assert str(cat) == "Phones, количество продуктов: 13 шт."
 
+
+def test_category_average_price_with_products():
+    p1 = Product("Товар1", "Описание1", 100, 2)
+    p2 = Product("Товар2", "Описание2", 200, 3)
+    category = Category("Электроника", "Техника", [p1, p2])
+    assert category.middle_price() == 150.0  # (100+200)/2
+
+
+def test_category_average_price_empty():
+    empty_category = Category("Пустая", "Без товаров", [])
+    assert empty_category.middle_price() == 0
+
+
+def test_category_add_product_zero_quantity():
+    product = Product(
+        "Книга", "Интересная", 300, 1
+    )  # создаём с положительным количеством
+    product.quantity = 0  # имитируем, что остаток стал нулевым
+    category = Category("Книги", "Разные", [])
+
+    with pytest.raises(
+        ZeroQuantityError,
+        match="Товар с нулевым количеством не может быть добавлен в категорию",
+    ):
+        category.add_product(product)
+
+
 # Тесты для Order
+
 
 def test_order_init(sample_product):
     order = Order(sample_product, 3)
     assert order.product is sample_product
     assert order.quantity == 3
     assert order.total_price == 300.0
+
 
 def test_order_str(sample_product):
     order = Order(sample_product, 2)
@@ -211,7 +248,17 @@ def test_order_str(sample_product):
     assert "2" in text
     assert "200.0" in text
 
+
 def test_order_with_smartphone():
     phone = Smartphone("A", "desc", 100.0, 5, 90.0, "A", 128, "black")
     order = Order(phone, 2)
     assert order.total_price == 200.0
+
+
+def test_order_init_zero_quantity():
+    product = Product("Часы", "Наручные", 5000, 2)
+    with pytest.raises(
+        ZeroQuantityError,
+        match="Товар с нулевым количеством не может быть добавлен в категорию",
+    ):
+        Order(product, 0)

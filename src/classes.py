@@ -1,5 +1,5 @@
-from src.ExceptionsClass import ZeroQuantityError
 from src.base_classes import BaseDate, BaseProduct, MixinLog
+from src.ExceptionsClass import ZeroQuantityError
 
 
 class Product(BaseProduct, MixinLog):
