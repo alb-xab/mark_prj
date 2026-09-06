@@ -1,9 +1,12 @@
+from src.ExceptionsClass import ZeroQuantityError
 from src.base_classes import BaseDate, BaseProduct, MixinLog
 
 
 class Product(BaseProduct, MixinLog):
 
     def __init__(self, name, description, price, quantity):
+        if quantity == 0:
+            raise ValueError("Товар с нулевым количеством не может быть добавлен")
         self.name = name
         self.description = description
         self.__price = price
@@ -96,11 +99,13 @@ class Category(BaseDate):
         return f"{self.name}, количество продуктов: {total_quantity} шт."
 
     def add_product(self, product):
-        if isinstance(product, Product):
+        if not isinstance(product, Product):
+            raise TypeError("Можно добавлять только объекты класса Product")
+        if product.quantity == 0:
+            raise ZeroQuantityError
+        else:
             self.__products.append(product)
             Category.product_count += 1
-        else:
-            raise TypeError
 
     @property
     def products(self):
@@ -112,10 +117,19 @@ class Category(BaseDate):
     def get_product_list(self):
         return self.__products
 
+    def middle_price(self):
+        try:
+            total_price = sum(product.price for product in self.__products)
+            return total_price / len(self.__products)
+        except ZeroDivisionError:
+            return 0
+
 
 class Order(BaseDate):
 
     def __init__(self, product, quantity):
+        if quantity == 0:
+            raise ZeroQuantityError
         self.product = product  # ссылка на Product (или наследника)
         self.quantity = quantity  # сколько купили
         self.total_price = product.price * quantity  # итог
